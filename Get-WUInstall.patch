@@ -1,0 +1,54 @@
+#Diff against 'Windows Update PowerShell Module' by MichalGajda 
+#Adds functionality to install only updates that would appear as 'import' in Windows Update Gui.
+#Has been incorporated upstream
+
+#(http://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc/) 
+#http://gallery.technet.microsoft.com/scriptcenter/Add-Parameter-AutoSelectOnl-1d62a499
+
+# diff -u Get-WUInstall.ps1.orig PSWindowsUpdate/Get-WUInstall.ps1  
+--- Get-WUInstall.ps1.orig  
++++ PSWindowsUpdate/Get-WUInstall.ps1  
+@@ -87,6 +87,9 @@  
+        .PARAMETER IgnoreReboot  
+                Do not ask for reboot if it needed, but do not reboot automaticaly.  
+  
++       .PARAMETER AutoSelectOnly  
++               Install only the updates that would appear as 'important' updates in the Windows Update GUI.  
++  
+        .PARAMETER Debuger  
+            Debug mode.  
+  
+@@ -232,6 +235,7 @@  
+                [Switch]$AcceptAll,  
+                [Switch]$AutoReboot,  
+                [Switch]$IgnoreReboot,  
++               [Switch]$AutoSelectOnly,  
+                [Switch]$Debuger  
+        )  
+  
+@@ -696,6 +700,25 @@  
+                                        Write-Debug "Add update to collection"  
+                                        $objCollectionChoose.Add($Update) | Out-Null  
+                                } #End If $AcceptAll  
++                               ElseIf($AutoSelectOnly)  
++                               {  
++                                       If($Update.AutoSelectOnWebsites)  
++                                       {  
++                                               $Status = "Accepted"  
++                                               If($Update.EulaAccepted -eq 0)  
++                                               {  
++                                                       Write-Debug "Accept Eula"  
++                                                       $Update.AcceptEula()  
++                                               } #End If $Update.EulaAccepted -eq 0  
++  
++                                               Write-Debug "Add update to collection"  
++                                               $objCollectionChoose.Add($Update) | Out-Null  
++                                       }  
++                                       Else  
++                                       {  
++                                               $Status = "Rejected"  
++                                       }  
++                               } #End Else If $AutoSelectOnly  
+                                Else  
+                                {  
+                                        If($pscmdlet.ShouldProcess($Env:COMPUTERNAME,"$($Update.Title)[$size]?")) 
