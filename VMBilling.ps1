@@ -1,5 +1,7 @@
-echo "VMBilling.ps1 : Generates a list of VMs sorted by the Folder they reside in
-      and saves the output as a CSV to your Desktop. Requires the VMWare PowerCLI Snapin
+echo "VMBilling.ps1 : Generates a list of VMs sorted by the Folder 
+      they reside in and saves the output as a CSV to $home. 
+
+      Requires the VMWare PowerCLI Snapin.
       
       You may be prompted for credentials to access VCenter."
 
@@ -12,7 +14,7 @@ if ( (Get-PowerCLIConfiguration -Scope User).InvalidCertificateAction -eq $null 
 }
 
 Connect-VIServer -Server vcenter.example.com
-$exportPath = "$home\Desktop\VMBilling-$((get-date -Format s) -replace ':',".").csv"
+$exportPath = "$home\VMBilling-$((get-date -Format s) -replace ':',".").csv"
 $vms = get-vm
 $vmexport = $vms | select Name,Folder,@{ name="DataCenter"; expression = {Get-DataCenter -VM $_}},`
                           MemoryGB,NumCPU,`
