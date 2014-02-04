@@ -11,7 +11,7 @@ if ( (Get-PowerCLIConfiguration -Scope User).InvalidCertificateAction -eq $null 
   Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Scope User
 }
 
-Connect-VIServer -Server vcenter.thejockeyclub.net
+Connect-VIServer -Server vcenter.example.com
 $exportPath = "$home\Desktop\VMBilling-$((get-date -Format s) -replace ':',".").csv"
 $vms = get-vm
 $vmexport = $vms | select Name,Folder,@{ name="DataCenter"; expression = {Get-DataCenter -VM $_}},`
